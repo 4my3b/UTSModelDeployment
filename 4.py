@@ -18,7 +18,7 @@ scale_cols = ['person_age', 'person_income', 'person_emp_exp', 'loan_amnt', 'loa
 ord_col = 'person_education'
 
 st.title("FinPred")
-st.markdown("### FinPred is a machine learning-powered application designed to predict whether a loan application will be approved or rejected. By analyzing key factors such as age, income, credit history, and loan purpose, FinPred helps financial institutions make fast, accurate, and data-driven decisions.")
+st.markdown("##### FinPred is a machine learning-powered application designed to predict whether a loan application will be approved or rejected. By analyzing key factors such as age, income, credit history, and loan purpose, FinPred helps financial institutions make fast, accurate, and data-driven decisions.")
 st.write("Please input the data")
 
 test_cases = {
