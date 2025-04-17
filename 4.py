@@ -1,6 +1,7 @@
 import pickle
 import pandas as pd
 import streamlit as st
+import time
 
 with open("xgb_best_model.pkl", "rb") as f:
     model = pickle.load(f)
