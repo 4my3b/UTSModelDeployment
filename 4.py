@@ -58,21 +58,39 @@ if col2.button("Gunakan Test Case 2"):
     for k, v in test_cases["Test Case 2"].items():
         st.session_state[k] = v
 
-person_age = st.number_input("Usia", value=st.session_state.get("person_age", 30), step=1)
-person_income = st.number_input("Pendapatan", value=st.session_state.get("person_income", 50000.0))
-person_home_ownership = st.selectbox("Status kepemilikan rumah", ['RENT', 'OWN', 'MORTGAGE', 'OTHER'], index=['RENT', 'OWN', 'MORTGAGE', 'OTHER'].index(st.session_state.get("person_home_ownership", 'RENT')))
-person_emp_exp = st.number_input("Lama pengalaman kerja (tahun)", value=st.session_state.get("person_emp_exp", 5), step=1)
-loan_intent = st.selectbox("Tujuan pinjaman", ['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'], index=['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'].index(st.session_state.get("loan_intent", 'EDUCATION')))
-loan_amnt = st.number_input("Jumlah pinjaman", value=st.session_state.get("loan_amnt", 10000.0))
-loan_int_rate = st.number_input("Tingkat bunga pinjaman (%)", value=st.session_state.get("loan_int_rate", 10.0))
-cb_person_cred_hist_length = st.number_input("Lama riwayat kredit (tahun)", value=st.session_state.get("cb_person_cred_hist_length", 5), step=1)
-person_gender = st.selectbox("Jenis kelamin", ['male', 'female'], index=['male', 'female'].index(st.session_state.get("person_gender", 'male')))
-person_education = st.selectbox("Pendidikan", ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'], index=['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'].index(st.session_state.get("person_education", 'Bachelor')))
-default_val = st.session_state.get("previous_loan_defaults_on_file", 'No')
-index = ['Yes', 'No'].index(default_val) if default_val in ['Yes', 'No'] else 1
-previous_loan_defaults_on_file = st.selectbox("Ada gagal bayar sebelumnya?", ['Yes','No'], index=index)
+col1, col2, col3 = st.columns(3)
 
-credit_score = st.number_input("Skor kredit", value=st.session_state.get("credit_score", 650), step=1)
+with col1:
+    person_age = st.number_input("Usia", value=st.session_state.get("person_age", 30), step=1)
+    person_home_ownership = st.selectbox(
+        "Status kepemilikan rumah", ['RENT', 'OWN', 'MORTGAGE', 'OTHER'],
+        index=['RENT', 'OWN', 'MORTGAGE', 'OTHER'].index(st.session_state.get("person_home_ownership", 'RENT'))
+    )
+    loan_intent = st.selectbox(
+        "Tujuan pinjaman", ['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'],
+        index=['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'].index(st.session_state.get("loan_intent", 'EDUCATION'))
+    )
+    person_gender = st.selectbox(
+        "Jenis kelamin", ['male', 'female'],
+        index=['male', 'female'].index(st.session_state.get("person_gender", 'male'))
+    )
+
+with col2:
+    person_income = st.number_input("Pendapatan", value=st.session_state.get("person_income", 50000.0))
+    person_emp_exp = st.number_input("Lama pengalaman kerja (tahun)", value=st.session_state.get("person_emp_exp", 5), step=1)
+    loan_amnt = st.number_input("Jumlah pinjaman", value=st.session_state.get("loan_amnt", 10000.0))
+    cb_person_cred_hist_length = st.number_input("Lama riwayat kredit (tahun)", value=st.session_state.get("cb_person_cred_hist_length", 5), step=1)
+
+with col3:
+    loan_int_rate = st.number_input("Tingkat bunga pinjaman (%)", value=st.session_state.get("loan_int_rate", 10.0))
+    person_education = st.selectbox(
+        "Pendidikan", ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'],
+        index=['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'].index(st.session_state.get("person_education", 'Bachelor'))
+    )
+    default_val = st.session_state.get("previous_loan_defaults_on_file", 'No')
+    index = ['Yes', 'No'].index(default_val) if default_val in ['Yes', 'No'] else 1
+    previous_loan_defaults_on_file = st.selectbox("Ada gagal bayar sebelumnya?", ['Yes','No'], index=index)
+    credit_score = st.number_input("Skor kredit", value=st.session_state.get("credit_score", 650), step=1)
 
 if st.button("Prediksi"):
     user_input = {
@@ -96,9 +114,7 @@ if st.button("Prediksi"):
         input_df[col] = le.transform(input_df[col])
 
     input_df[[ord_col]] = ordinal_encoder.transform(input_df[[ord_col]])
-
     input_df[scale_cols] = scaler.transform(input_df[scale_cols])
-
     input_df = input_df[feature_order]
 
     prediction = model.predict(input_df)[0]
