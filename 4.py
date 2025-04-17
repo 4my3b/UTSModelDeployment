@@ -58,35 +58,27 @@ if col2.button("Gunakan Test Case 2"):
     for k, v in test_cases["Test Case 2"].items():
         st.session_state[k] = v
 
-col1, col2, col3 = st.columns(3)
+col_a, col_b, col_c = st.columns(3)
 
-with col1:
+with col_a:
     person_age = st.number_input("Usia", value=st.session_state.get("person_age", 30), step=1)
-    person_home_ownership = st.selectbox(
-        "Status kepemilikan rumah", ['RENT', 'OWN', 'MORTGAGE', 'OTHER'],
-        index=['RENT', 'OWN', 'MORTGAGE', 'OTHER'].index(st.session_state.get("person_home_ownership", 'RENT'))
-    )
-    loan_intent = st.selectbox(
-        "Tujuan pinjaman", ['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'],
-        index=['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'].index(st.session_state.get("loan_intent", 'EDUCATION'))
-    )
-    person_gender = st.selectbox(
-        "Jenis kelamin", ['male', 'female'],
-        index=['male', 'female'].index(st.session_state.get("person_gender", 'male'))
-    )
+    person_home_ownership = st.selectbox("Status kepemilikan rumah", ['RENT', 'OWN', 'MORTGAGE', 'OTHER'],
+                                         index=['RENT', 'OWN', 'MORTGAGE', 'OTHER'].index(st.session_state.get("person_home_ownership", 'RENT')))
+    loan_amnt = st.number_input("Jumlah pinjaman", value=st.session_state.get("loan_amnt", 10000.0))
+    person_gender = st.selectbox("Jenis kelamin", ['male', 'female'],
+                                 index=['male', 'female'].index(st.session_state.get("person_gender", 'male')))
 
-with col2:
+with col_b:
     person_income = st.number_input("Pendapatan", value=st.session_state.get("person_income", 50000.0))
     person_emp_exp = st.number_input("Lama pengalaman kerja (tahun)", value=st.session_state.get("person_emp_exp", 5), step=1)
-    loan_amnt = st.number_input("Jumlah pinjaman", value=st.session_state.get("loan_amnt", 10000.0))
-    cb_person_cred_hist_length = st.number_input("Lama riwayat kredit (tahun)", value=st.session_state.get("cb_person_cred_hist_length", 5), step=1)
-
-with col3:
     loan_int_rate = st.number_input("Tingkat bunga pinjaman (%)", value=st.session_state.get("loan_int_rate", 10.0))
-    person_education = st.selectbox(
-        "Pendidikan", ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'],
-        index=['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'].index(st.session_state.get("person_education", 'Bachelor'))
-    )
+    person_education = st.selectbox("Pendidikan", ['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'],
+                                    index=['High School', 'Associate', 'Bachelor', 'Master', 'Doctorate'].index(st.session_state.get("person_education", 'Bachelor')))
+
+with col_c:
+    loan_intent = st.selectbox("Tujuan pinjaman", ['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'],
+                               index=['EDUCATION', 'MEDICAL', 'VENTURE', 'PERSONAL', 'DEBTCONSOLIDATION', 'HOMEIMPROVEMENT'].index(st.session_state.get("loan_intent", 'EDUCATION')))
+    cb_person_cred_hist_length = st.number_input("Lama riwayat kredit (tahun)", value=st.session_state.get("cb_person_cred_hist_length", 5), step=1)
     default_val = st.session_state.get("previous_loan_defaults_on_file", 'No')
     index = ['Yes', 'No'].index(default_val) if default_val in ['Yes', 'No'] else 1
     previous_loan_defaults_on_file = st.selectbox("Ada gagal bayar sebelumnya?", ['Yes','No'], index=index)
@@ -108,26 +100,27 @@ if st.button("Prediksi"):
         'credit_score': credit_score
     }
 
-    input_df = pd.DataFrame([user_input])
+    with st.spinner("🔄 Sedang memproses prediksi..."):
+        input_df = pd.DataFrame([user_input])
 
-    for col, le in label_encoders.items():
-        input_df[col] = le.transform(input_df[col])
+        for col, le in label_encoders.items():
+            input_df[col] = le.transform(input_df[col])
 
-    input_df[[ord_col]] = ordinal_encoder.transform(input_df[[ord_col]])
-    input_df[scale_cols] = scaler.transform(input_df[scale_cols])
-    input_df = input_df[feature_order]
+        input_df[[ord_col]] = ordinal_encoder.transform(input_df[[ord_col]])
+        input_df[scale_cols] = scaler.transform(input_df[scale_cols])
+        input_df = input_df[feature_order]
 
-    prediction = model.predict(input_df)[0]
-    prediction_proba = model.predict_proba(input_df)[0]
+        prediction = model.predict(input_df)[0]
+        prediction_proba = model.predict_proba(input_df)[0]
 
-    prediction = int(prediction)
-    prediction_proba = [float(p) for p in prediction_proba]
+        prediction = int(prediction)
+        prediction_proba = [float(p) for p in prediction_proba]
 
     status_map = {0: "Denied", 1: "Approved"}
     if prediction == 1:
-        st.success(f"Prediksi Status Pinjaman: {status_map[prediction]}")
+        st.success(f"✅ Prediksi Status Pinjaman: {status_map[prediction]}")
     else:
-        st.error(f"Prediksi Status Pinjaman: {status_map[prediction]}")
+        st.error(f"❌ Prediksi Status Pinjaman: {status_map[prediction]}")
 
     st.write("Probabilitas Prediksi:")
     prob_df = pd.DataFrame({
