@@ -2,7 +2,6 @@ import pickle
 import pandas as pd
 import streamlit as st
 
-# === Load model and preprocessing tools ===
 with open("xgb_best_model.pkl", "rb") as f:
     model = pickle.load(f)
 with open("xgb_label_encoders.pkl", "rb") as f:
@@ -109,7 +108,10 @@ if st.button("Prediksi"):
     prediction_proba = [float(p) for p in prediction_proba]
 
     status_map = {0: "Denied", 1: "Approved"}
-    st.success(f"Prediksi Status Pinjaman: {status_map.get(prediction, 'Unknown')}")
+    if prediction == 1:
+        st.success(f"Prediksi Status Pinjaman: {status_map[prediction]}")
+    else:
+        st.error(f"Prediksi Status Pinjaman: {status_map[prediction]}")
 
     st.write("Probabilitas Prediksi:")
     prob_df = pd.DataFrame({
